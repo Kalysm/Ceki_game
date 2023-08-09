@@ -1,20 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import StackNav from "./routes/StackNav";
+import { Text } from "react-native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { TimeProvider } from "./components/TimeContext";
+import theme from "./theme/theme";
+
+// Personnalisez le thème par défaut de NavigationContainer avec votre thème personnalisé
+const customTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: theme.darkBackground, // Utilisation de la couleur de fond sombre
+  },
+};
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    WendyOne: require("./assets/fonts/WendyOne-Regular.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return <Text>Chargement...</Text>;
+  }
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <TimeProvider>
+      <NavigationContainer theme={customTheme}>
+        <StackNav />
+      </NavigationContainer>
+    </TimeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
