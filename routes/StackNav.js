@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import SettingsScreens from "../screens/SettingsScreens";
 import CategoriesScreen from "../screens/CategoriesScreen";
 import ScoreScreen from "../screens/ScoreScreen";
+import TestScreen from "../screens/TestScreen";
 
 const Stack = createStackNavigator();
 
@@ -28,6 +29,11 @@ const StackNav = () => {
       <Stack.Screen
         name="Score"
         component={ScoreScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Test"
+        component={TestScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

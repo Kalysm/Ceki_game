@@ -1,16 +1,14 @@
 import React, { useEffect } from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Image } from "react-native";
 import * as ScreenOrientation from "expo-screen-orientation";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import MainButton from "../components/MainButton";
 
-const ScoreScreen = () => {
+const ScoreScreen = ({ navigation }) => {
   const route = useRoute();
-  const { categoryName } = route.params;
+  const { categoryName, gameplay } = route.params;
   const { wonWords, lostWords } = route.params;
-
-  const navigation = useNavigation();
 
   useEffect(() => {
     const lockScreenOrientation = async () => {
@@ -18,10 +16,16 @@ const ScoreScreen = () => {
         ScreenOrientation.OrientationLock.PORTRAIT
       );
     };
+
     lockScreenOrientation();
+
+    return () => {
+      ScreenOrientation.unlockAsync();
+    };
   }, []);
 
   const finalScore = wonWords.length;
+  console.log(categoryName);
 
   return (
     <View style={styles.container}>
@@ -37,7 +41,7 @@ const ScoreScreen = () => {
       />
       <View style={styles.logoContainer}>
         <View style={styles.finalScoreContainer}>
-          <Text style={styles.finalScoreText}> {finalScore} </Text>
+          <Text style={styles.finalScoreText}> {finalScore} pts </Text>
         </View>
         <View style={styles.ScoreContainer}>
           <Text style={styles.winText}>Gagnés</Text>
@@ -55,7 +59,12 @@ const ScoreScreen = () => {
         </View>
       </View>
       <MainButton
-        onPress={() => navigation.navigate("Game", { categoryName })}
+        onPress={() =>
+          navigation.navigate("Game", {
+            categoryName: categoryName,
+            gameplay: gameplay,
+          })
+        }
         buttonTitle="Rejouer"
       />
     </View>
@@ -73,9 +82,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: "center",
   },
-  back: {
-    backgroundColor: "red",
-  },
+
   finalScoreContainer: {
     paddingHorizontal: 20,
     paddingVertical: 10,

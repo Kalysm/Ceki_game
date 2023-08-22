@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F09B1C",
     paddingVertical: 20,
     width: 180,
-    borderRadius: 50,
     marginHorizontal: 5,
   },
   textButton: {

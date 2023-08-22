@@ -4,11 +4,11 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Image,
   SafeAreaView,
 } from "react-native";
 import { useTime } from "../components/TimeContext";
 import { FontAwesome } from "@expo/vector-icons";
+import { Image } from "expo-image";
 
 const SettingsScreens = ({ navigation }) => {
   const timeContext = useTime();

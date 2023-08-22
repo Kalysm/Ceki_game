@@ -1,5 +1,5 @@
 import StackNav from "./routes/StackNav";
-import { Text } from "react-native";
+import { StatusBar, Text } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { TimeProvider } from "./components/TimeContext";

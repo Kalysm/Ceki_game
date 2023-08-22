@@ -5,50 +5,66 @@ import {
   StatusBar,
   StyleSheet,
   SafeAreaView,
+  Text,
+  TouchableOpacity,
 } from "react-native";
 import ItemsCategory from "../components/ItemsCategory";
 import * as ScreenOrientation from "expo-screen-orientation";
 import Header from "../components/Header";
+import FlippingCard from "../components/FlippingCard";
+import { LinearGradient } from "expo-linear-gradient";
 
 const CategoriesScreen = () => {
   const allCategories = [
     {
-      title: "films",
-      imageUrl: require("../assets/films.jpg"),
+      title: "Capitales du monde",
+      theme: "CapitalesDuMonde",
+      imageUrl: require("../assets/creature.jpg"),
+      gameplay: "deviner",
     },
     {
-      title: "musics",
-      imageUrl: require("../assets/musics.jpg"),
+      title: "Recettes",
+      theme: "Recettes",
+      imageUrl: require("../assets/creature2.jpg"),
+      gameplay: "deviner",
     },
     {
-      title: "Harry",
-      imageUrl: require("../assets/musics.jpg"),
-    },
-    {
-      title: "Star wars",
-      imageUrl: require("../assets/musics.jpg"),
+      title: "Star Wars",
+      theme: "Star Wars",
+      imageUrl: require("../assets/creature3.jpg"),
+      gameplay: "deviner",
     },
     {
       title: "Seigneur des anneaux",
-      imageUrl: require("../assets/musics.jpg"),
+      theme: "Seigneur des anneaux",
+      imageUrl: require("../assets/creature2.jpg"),
+      gameplay: "deviner",
     },
     {
-      title: "Batman",
-      imageUrl: require("../assets/musics.jpg"),
+      title: "musics",
+      theme: "musics",
+      imageUrl: require("../assets/creature.jpg"),
+      gameplay: "mimer",
     },
     {
-      title: "Spiderman",
-      imageUrl: require("../assets/musics.jpg"),
+      title: "Voitures",
+      theme: "Voitures",
+      imageUrl: require("../assets/creature.jpg"),
+      gameplay: "deviner",
     },
     {
-      title: "Superman",
-      imageUrl: require("../assets/musics.jpg"),
-    },
-    {
-      title: "Thor",
-      imageUrl: require("../assets/musics.jpg"),
+      title: "Sport",
+      theme: "Sport",
+      imageUrl: require("../assets/creature.jpg"),
+      gameplay: "deviner",
     },
   ];
+
+  const [activeFilter, setActiveFilter] = useState("deviner");
+
+  const filteredCategories = activeFilter
+    ? allCategories.filter((category) => category.gameplay === activeFilter)
+    : allCategories;
 
   useEffect(() => {
     const lockScreenOrientation = async () => {
@@ -57,34 +73,62 @@ const CategoriesScreen = () => {
       );
     };
 
-    const detectAndLockPortrait = async () => {
-      const orientationInfo = await ScreenOrientation.getOrientationAsync();
-      if (orientationInfo === ScreenOrientation.Orientation.LANDSCAPE_LEFT) {
-        lockScreenOrientation();
-      }
-    };
+    // Ajoutez un gestionnaire pour réinitialiser l'orientation lorsque l'écran est affiché
+    lockScreenOrientation();
 
-    detectAndLockPortrait(); // Call the function to check and lock on mount
-
-    const orientationChangeListener =
-      ScreenOrientation.addOrientationChangeListener((event) => {
-        if (
-          event.orientationLock === ScreenOrientation.Orientation.LANDSCAPE_LEFT
-        ) {
-          lockScreenOrientation();
-        }
-      });
-
+    // Assurez-vous de déverrouiller l'orientation lorsque l'écran est quitté
     return () => {
-      orientationChangeListener.remove(); // Clean up the subscription
+      ScreenOrientation.unlockAsync();
     };
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={"#05151C"} />
-      <Header />
-      <View style={styles.listContainer}>
+      <LinearGradient
+        colors={["#1F1F1F", "#1F1F1F"]}
+        end={{ x: 1, y: 2.3 }}
+        style={styles.background}
+      >
+        <StatusBar backgroundColor={"#1F1F1F"} />
+
+        <Header />
+
+        <View style={styles.filterButtonsContainer}>
+          <TouchableOpacity
+            style={[
+              styles.filterButton,
+              activeFilter === "deviner" && styles.activeFilterButton,
+            ]}
+            onPress={() => setActiveFilter("deviner")}
+          >
+            <Text
+              style={[
+                styles.filterButtonText,
+                activeFilter === "deviner" && styles.activeFilterButtonText,
+              ]}
+            >
+              Deviner
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.filterButton,
+              activeFilter === "mimer" && styles.activeFilterButton,
+            ]}
+            onPress={() => setActiveFilter("mimer")}
+          >
+            <Text
+              style={[
+                styles.filterButtonText,
+                activeFilter === "mimer" && styles.activeFilterButtonText,
+              ]}
+            >
+              Mimer
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* <View style={styles.listContainer}>
         <FlatList
           data={allCategories}
           renderItem={({ item }) => (
@@ -95,7 +139,25 @@ const CategoriesScreen = () => {
           keyExtractor={(item) => item.title}
           numColumns={3}
         />
-      </View>
+      </View> */}
+
+        <FlatList
+          data={filteredCategories}
+          renderItem={({ item }) => (
+            <View style={styles.itemContainer}>
+              <FlippingCard
+                title={item.title}
+                theme={item.theme}
+                gameplay={item.gameplay}
+                imageUrl={item.imageUrl}
+              />
+            </View>
+          )}
+          keyExtractor={(item) => item.theme}
+          numColumns={2}
+          contentContainerStyle={styles.listContent}
+        />
+      </LinearGradient>
     </SafeAreaView>
   );
 };
@@ -104,15 +166,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  listContainer: {
-    flex: 1,
-    alignItems: "stretch",
+  filterButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  filterButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginHorizontal: 5,
+  },
+  activeFilterButton: {
+    backgroundColor: "black",
+  },
+  filterButtonText: {
+    fontSize: 18,
+    color: "white",
+    fontFamily: "WendyOne",
+  },
+  activeFilterButtonText: {
+    fontSize: 20,
+    color: "#F09B1C",
+    fontFamily: "WendyOne",
   },
   itemContainer: {
-    marginTop: 2,
+    marginVertical: 15,
+    marginHorizontal: 15,
     flex: 1,
     padding: 2,
-    alignItems: "center", // Center items horizontally
+    alignItems: "center",
+  },
+  listContent: {
+    paddingBottom: 150, // Adjust this value as needed
   },
 });
 

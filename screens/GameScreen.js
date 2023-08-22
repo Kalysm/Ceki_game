@@ -2,14 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { DeviceMotion } from "expo-sensors";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import axios from "axios";
 import { useTime } from "../components/TimeContext";
 
-const GameScreen = () => {
-  const navigation = useNavigation();
+const GameScreen = ({ navigation }) => {
   const route = useRoute();
-  const { categoryName } = route.params;
+  const { categoryName, gameplay } = route.params;
   const { selectedDuration } = useTime();
 
   const [text, setText] = useState("Placez votre téléphone sur votre front");
@@ -33,6 +32,7 @@ const GameScreen = () => {
         ScreenOrientation.OrientationLock.LANDSCAPE_LEFT
       );
     };
+
     lockScreenOrientation();
 
     return () => {
@@ -86,8 +86,6 @@ const GameScreen = () => {
     const { acceleration } = data;
     if (acceleration && acceleration.hasOwnProperty("x")) {
       let { x } = acceleration;
-
-      // Ajustement des valeurs d'accélération en fonction de l'orientation LANDSCAPE
 
       const now = Date.now();
       const timeSinceLastDetection = now - lastDetectionTimeRef.current;
@@ -162,15 +160,17 @@ const GameScreen = () => {
   }, [isGameStarted]);
 
   useEffect(() => {
-    if (isGameStarted && isMovingUp) {
-      // L'utilisateur a bougé son téléphone vers le haut (action de validation)
-      if (Platform.OS === "ios") {
-        handleMoveUp();
-      } else {
-        handleMoveDown();
+    if (isGameStarted) {
+      if (isMovingUp) {
+        // L'utilisateur a bougé son téléphone vers le haut (action de validation)
+        if (Platform.OS === "ios") {
+          handleMoveUp();
+        } else {
+          handleMoveDown();
+        }
       }
 
-      if (isGameStarted && isMovingDown) {
+      if (isMovingDown) {
         // L'utilisateur a bougé son téléphone vers le bas (action de passer)
         if (Platform.OS === "ios") {
           handleMoveDown();
@@ -179,7 +179,7 @@ const GameScreen = () => {
         }
       }
     }
-  }, [isMovingUp, isMovingDown]);
+  }, [isGameStarted, isMovingUp, isMovingDown]);
 
   const handleMoveUp = () => {
     console.log("TELEPHONE EN HAUT ^^^^^^");
@@ -213,6 +213,8 @@ const GameScreen = () => {
       navigation.replace("Score", {
         wonWords: wonWords,
         lostWords: lostWords,
+        categoryName: categoryName,
+        gameplay: gameplay,
       });
     }
   }, [isGameStarted, gameTimer]);
@@ -220,6 +222,9 @@ const GameScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.gamecontainer}>
+        {isGameStarted && gameplay && (
+          <Text style={styles.gameplayText}>{gameplay}:</Text>
+        )}
         {randomData && isGameStarted && (
           <Text style={styles.text}>{randomData}</Text>
         )}
@@ -253,9 +258,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gamecontainer: {
-    flex: 1,
+    flex: 1, // Adjust flex to control the space distribution
     justifyContent: "center",
     alignItems: "center",
+  },
+  gameplayText: {
+    fontSize: 25,
+    color: "white",
+    fontFamily: "WendyOne",
+    textShadowColor: "orange", // Change to your shadow color
+    textShadowOffset: { width: 1, height: 1 }, // Change the offset
+    textShadowRadius: 8,
+    opacity: 0.5,
+    marginBottom: 10,
+  },
+  text: {
+    fontSize: 35,
+    color: "white",
+    fontFamily: "WendyOne",
+    textAlign: "center",
   },
   timerContainer: {
     position: "absolute",
@@ -286,11 +307,6 @@ const styles = StyleSheet.create({
   },
   loseText: {
     fontSize: 40,
-    color: "white",
-    fontFamily: "WendyOne",
-  },
-  text: {
-    fontSize: 35,
     color: "white",
     fontFamily: "WendyOne",
   },

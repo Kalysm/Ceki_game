@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "WendyOne",
     color: "white",
     textAlign: "center",
   },
