@@ -6,16 +6,26 @@ import {
   Easing,
   TouchableOpacity,
   Text,
-  ImageBackground,
 } from "react-native";
 import MainButton from "./MainButton";
 import { useNavigation } from "@react-navigation/native";
 import { Image } from "expo-image";
+import { allCategories } from "../data/categories";
 
-const FlippingCard = ({ imageUrl, title, theme, gameplay }) => {
+const FlippingCard = ({
+  imageUrl,
+  title,
+  theme,
+  gameplay,
+  style,
+  isRotating,
+  isVisible,
+}) => {
   const navigation = useNavigation();
-  const animatedValue = useRef(new Animated.Value(0)).current;
+
   const [isFlipped, setIsFlipped] = useState(false);
+
+  const animatedValue = useRef(new Animated.Value(0)).current;
 
   const rotationY = animatedValue.interpolate({
     inputRange: [0, 1],
@@ -23,20 +33,31 @@ const FlippingCard = ({ imageUrl, title, theme, gameplay }) => {
   });
 
   const handleCardPress = () => {
-    const toValue = isFlipped ? 0 : 1;
+    if (isRotating === false || isRotating === undefined) {
+      const toValue = isFlipped ? 0 : 1;
 
-    Animated.timing(animatedValue, {
-      toValue,
-      duration: 100,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start();
-
-    setIsFlipped(!isFlipped);
+      Animated.timing(animatedValue, {
+        toValue,
+        duration: 250,
+        easing: Easing.circle,
+        useNativeDriver: true,
+      }).start(() => {
+        setIsFlipped(!isFlipped);
+      });
+    }
   };
 
+  const getRandomCategory = () => {
+    const randomIndex = Math.floor(Math.random() * allCategories.length);
+    return allCategories[randomIndex];
+  };
+
+  const randomCategory = getRandomCategory();
+
+  console.log(isFlipped);
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <TouchableOpacity onPress={handleCardPress}>
         <Animated.View
           style={[styles.category, { transform: [{ rotateY: rotationY }] }]}
@@ -59,6 +80,24 @@ const FlippingCard = ({ imageUrl, title, theme, gameplay }) => {
               <Text style={styles.title}>{title}</Text>
             </View>
           )}
+
+          {isFlipped && isVisible && (
+            <View style={styles.imageBackground}>
+              <Image source={randomCategory.imageUrl} style={styles.image} />
+              <Text
+                style={[styles.title, { transform: [{ rotateY: "180deg" }] }]}
+              >
+                {randomCategory.title}
+              </Text>
+            </View>
+          )}
+
+          {isRotating && (
+            <View style={styles.imageBackground}>
+              <Image source={imageUrl} style={styles.image} />
+              <Text style={styles.title}>{title}</Text>
+            </View>
+          )}
         </Animated.View>
       </TouchableOpacity>
     </View>
@@ -73,23 +112,9 @@ const styles = StyleSheet.create({
   },
   category: {
     backgroundColor: "black",
-    borderWidth: 2,
-    borderColor: "#1E1E1E",
-    borderStyle: "solid",
-    borderRadius: 1,
-    width: 180,
-    height: 250,
+    width: 120,
+    height: 160,
     overflow: "hidden",
-  },
-  cardContainer: {
-    backgroundColor: "black",
-    borderWidth: 2,
-    borderColor: "#1E1E1E",
-    borderStyle: "solid",
-    borderRadius: 1,
-    width: 150,
-    height: 220,
-    perspective: 1000,
   },
   card: {
     width: "100%",
@@ -106,15 +131,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
-    borderRadius: 2,
   },
   image: {
-    width: 180,
-    height: 250,
+    width: 120,
+    height: 160,
     position: "absolute",
+    borderWidth: 2,
+    borderColor: "white",
+    borderStyle: "solid",
+    borderRadius: 3,
   },
   title: {
-    fontSize: 23,
+    fontSize: 15,
     fontFamily: "WendyOne",
     color: "white",
     marginBottom: 15,

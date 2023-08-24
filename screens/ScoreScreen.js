@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useRoute } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import MainButton from "../components/MainButton";
+import { Image } from "expo-image";
 
 const ScoreScreen = ({ navigation }) => {
   const route = useRoute();
@@ -29,6 +30,10 @@ const ScoreScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require("../assets/creature3.jpg")}
+        style={styles.background}
+      />
       <View style={styles.logoContainer}>
         <Image source={require("../assets/logo.png")} style={styles.logo} />
       </View>
@@ -37,20 +42,20 @@ const ScoreScreen = ({ navigation }) => {
         size={24}
         color="white"
         style={{ paddingLeft: 15 }}
-        onPress={() => navigation.navigate("Home")}
+        onPress={() => navigation.replace("Home")}
       />
       <View style={styles.logoContainer}>
         <View style={styles.finalScoreContainer}>
           <Text style={styles.finalScoreText}> {finalScore} pts </Text>
         </View>
         <View style={styles.ScoreContainer}>
-          <Text style={styles.winText}>Gagnés</Text>
+          <Text style={styles.winText}>Gagnés:</Text>
           {wonWords.map((word, index) => (
             <Text style={styles.winText} key={index}>
               - {word}
             </Text>
           ))}
-          <Text style={styles.lostText}>Perdu</Text>
+          <Text style={styles.lostText}>Perdu:</Text>
           {lostWords.map((word, index) => (
             <Text style={styles.lostText} key={index}>
               - {word}
@@ -60,7 +65,7 @@ const ScoreScreen = ({ navigation }) => {
       </View>
       <MainButton
         onPress={() =>
-          navigation.navigate("Game", {
+          navigation.replace("Game", {
             categoryName: categoryName,
             gameplay: gameplay,
           })
@@ -75,8 +80,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  background: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+  },
   logo: {
-    width: 130,
+    width: 135,
     height: 50,
   },
   logoContainer: {
@@ -103,12 +113,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   winText: {
-    color: "green",
+    color: "#009700",
     fontFamily: "WendyOne",
     fontSize: 20,
   },
   lostText: {
-    color: "red",
+    color: "grey",
     fontFamily: "WendyOne",
     fontSize: 20,
   },

@@ -18,14 +18,14 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#F09B1C",
-    paddingVertical: 20,
+    backgroundColor: "#009700",
     width: 180,
+    height: 30,
     marginHorizontal: 5,
   },
   textButton: {
     color: "white",
-    fontSize: 20,
+    fontSize: 15,
     fontFamily: "WendyOne",
   },
 });

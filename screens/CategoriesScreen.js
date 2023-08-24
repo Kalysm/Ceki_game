@@ -8,54 +8,19 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import ItemsCategory from "../components/ItemsCategory";
 import * as ScreenOrientation from "expo-screen-orientation";
 import Header from "../components/Header";
 import FlippingCard from "../components/FlippingCard";
 import { LinearGradient } from "expo-linear-gradient";
+import RandomThemeButton from "../components/RandomThemeButton";
+import { allCategories } from "../data/categories";
 
 const CategoriesScreen = () => {
-  const allCategories = [
+  const freeTheme = [
     {
-      title: "Capitales du monde",
-      theme: "CapitalesDuMonde",
-      imageUrl: require("../assets/creature.jpg"),
-      gameplay: "deviner",
-    },
-    {
-      title: "Recettes",
-      theme: "Recettes",
-      imageUrl: require("../assets/creature2.jpg"),
-      gameplay: "deviner",
-    },
-    {
-      title: "Star Wars",
-      theme: "Star Wars",
+      title: "Thème Gratuit!",
+      theme: "Gratuit",
       imageUrl: require("../assets/creature3.jpg"),
-      gameplay: "deviner",
-    },
-    {
-      title: "Seigneur des anneaux",
-      theme: "Seigneur des anneaux",
-      imageUrl: require("../assets/creature2.jpg"),
-      gameplay: "deviner",
-    },
-    {
-      title: "musics",
-      theme: "musics",
-      imageUrl: require("../assets/creature.jpg"),
-      gameplay: "mimer",
-    },
-    {
-      title: "Voitures",
-      theme: "Voitures",
-      imageUrl: require("../assets/creature.jpg"),
-      gameplay: "deviner",
-    },
-    {
-      title: "Sport",
-      theme: "Sport",
-      imageUrl: require("../assets/creature.jpg"),
       gameplay: "deviner",
     },
   ];
@@ -93,6 +58,8 @@ const CategoriesScreen = () => {
 
         <Header />
 
+        <RandomThemeButton />
+
         <View style={styles.filterButtonsContainer}>
           <TouchableOpacity
             style={[
@@ -127,19 +94,11 @@ const CategoriesScreen = () => {
             </Text>
           </TouchableOpacity>
         </View>
-
-        {/* <View style={styles.listContainer}>
-        <FlatList
-          data={allCategories}
-          renderItem={({ item }) => (
-            <View style={styles.itemContainer}>
-              <ItemsCategory title={item.title} imageUrl={item.imageUrl} />
-            </View>
-          )}
-          keyExtractor={(item) => item.title}
-          numColumns={3}
-        />
-      </View> */}
+        {activeFilter === "deviner" ? (
+          <TouchableOpacity style={styles.freeThemeContainer}>
+            <Text style={styles.freeThemeText}>{freeTheme[0].title}</Text>
+          </TouchableOpacity>
+        ) : null}
 
         <FlatList
           data={filteredCategories}
@@ -150,11 +109,12 @@ const CategoriesScreen = () => {
                 theme={item.theme}
                 gameplay={item.gameplay}
                 imageUrl={item.imageUrl}
+                style={styles.card}
               />
             </View>
           )}
           keyExtractor={(item) => item.theme}
-          numColumns={2}
+          numColumns={3}
           contentContainerStyle={styles.listContent}
         />
       </LinearGradient>
@@ -170,7 +130,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
   },
   filterButton: {
     paddingHorizontal: 20,
@@ -188,18 +147,28 @@ const styles = StyleSheet.create({
   },
   activeFilterButtonText: {
     fontSize: 20,
-    color: "#F09B1C",
+    color: "#009700",
     fontFamily: "WendyOne",
   },
+  freeThemeContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 50,
+    marginVertical: 10,
+    backgroundColor: "#009700",
+  },
+  freeThemeText: {
+    color: "white",
+    fontFamily: "WendyOne",
+    fontSize: 25,
+  },
   itemContainer: {
-    marginVertical: 15,
-    marginHorizontal: 15,
+    marginVertical: 5,
     flex: 1,
-    padding: 2,
     alignItems: "center",
   },
   listContent: {
-    paddingBottom: 150, // Adjust this value as needed
+    paddingBottom: 260,
   },
 });
 

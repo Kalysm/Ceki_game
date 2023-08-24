@@ -30,12 +30,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    marginBottom: 20,
+    marginBottom: 10,
     marginTop: 10,
   },
   logo: {
     width: 135,
-    height: 50,
+    height: 45,
     marginLeft: 25,
   },
   settingsButton: {

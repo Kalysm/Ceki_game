@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   selectedButton: {
-    color: "#F09B1C",
+    color: "#009700",
     fontSize: 23,
   },
 });

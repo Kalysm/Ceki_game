@@ -4,38 +4,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 import SettingsScreens from "../screens/SettingsScreens";
 import CategoriesScreen from "../screens/CategoriesScreen";
 import ScoreScreen from "../screens/ScoreScreen";
-import TestScreen from "../screens/TestScreen";
 
 const Stack = createStackNavigator();
 
 const StackNav = () => {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Home"
-        component={CategoriesScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Game"
-        component={GameScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Settings"
-        component={SettingsScreens}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Score"
-        component={ScoreScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Test"
-        component={TestScreen}
-        options={{ headerShown: false }}
-      />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Home" component={CategoriesScreen} />
+      <Stack.Screen name="Game" component={GameScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreens} />
+      <Stack.Screen name="Score" component={ScoreScreen} />
     </Stack.Navigator>
   );
 };

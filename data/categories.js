@@ -1,0 +1,86 @@
+export const allCategories = [
+  {
+    title: "Capitales du monde",
+    theme: "CapitalesDuMonde",
+    imageUrl: require("../assets/creature3.jpg"),
+    gameplay: "deviner",
+  },
+  {
+    title: "Recettes",
+    theme: "Recettes",
+    imageUrl: require("../assets/creature2.jpg"),
+    gameplay: "deviner",
+  },
+  {
+    title: "Star Wars",
+    theme: "Star Wars",
+    imageUrl: require("../assets/creature3.jpg"),
+    gameplay: "deviner",
+  },
+  {
+    title: "Seigneur des anneaux",
+    theme: "Seigneur des anneaux",
+    imageUrl: require("../assets/creature2.jpg"),
+    gameplay: "deviner",
+  },
+  {
+    title: "musics",
+    theme: "musics",
+    imageUrl: require("../assets/creature2.jpg"),
+    gameplay: "mimer",
+  },
+  {
+    title: "Voitures",
+    theme: "Voitures",
+    imageUrl: require("../assets/creature3.jpg"),
+    gameplay: "mimer",
+  },
+  {
+    title: "Sport",
+    theme: "Sport",
+    imageUrl: require("../assets/creature3.jpg"),
+    gameplay: "deviner",
+  },
+  {
+    title: "Vacances",
+    theme: "Vacances",
+    imageUrl: require("../assets/creature.jpg"),
+    gameplay: "deviner",
+  },
+  {
+    title: "Informatique",
+    theme: "Informatique",
+    imageUrl: require("../assets/creature3.jpg"),
+    gameplay: "deviner",
+  },
+  {
+    title: "Marques",
+    theme: "Marques",
+    imageUrl: require("../assets/creature.jpg"),
+    gameplay: "deviner",
+  },
+  {
+    title: "Harry Potter",
+    theme: "Harry Potter",
+    imageUrl: require("../assets/creature3.jpg"),
+    gameplay: "deviner",
+  },
+  {
+    title: "ASMR",
+    theme: "ASMR",
+    imageUrl: require("../assets/creature.jpg"),
+    gameplay: "deviner",
+  },
+  {
+    title: "Formule 1",
+    theme: "Formule 1",
+    imageUrl: require("../assets/creature2.jpg"),
+    gameplay: "deviner",
+  },
+  {
+    title: "Plantes",
+    theme: "Plantes",
+    imageUrl: require("../assets/creature.jpg"),
+    gameplay: "deviner",
+  },
+];
