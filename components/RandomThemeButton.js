@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import {
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   Modal,
@@ -11,9 +10,14 @@ import {
 } from "react-native";
 import FlippingCard from "./FlippingCard";
 import { allCategories } from "../data/categories";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Entypo } from "@expo/vector-icons";
+import { Image } from "expo-image";
+import MainButton from "./MainButton";
+import { useNavigation } from "@react-navigation/native";
 
 const RandomThemeButton = () => {
+  const navigation = useNavigation();
+
   const [isVisible, setIsVisible] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
 
@@ -52,7 +56,7 @@ const RandomThemeButton = () => {
   const [randomTheme, setRandomTheme] = useState(getRandomTheme());
 
   const rotate = rotateValue.interpolate({
-    inputRange: [0, 1],
+    inputRange: [0, 0.5],
     outputRange: ["0deg", "1440deg"], // Vous pouvez personnaliser la rotation ici.
   });
 
@@ -71,67 +75,118 @@ const RandomThemeButton = () => {
   const onRandomPress = () => {
     if (!isRotating) {
       setIsRotating(true);
+      setRandomTheme(getRandomTheme());
 
       // Définissez une animation de rotation sur 360 degrés (une rotation complète) pendant 3 secondes.
       Animated.timing(rotateValue, {
         toValue: 1,
-        duration: 700,
+        duration: 2000,
         easing: Easing.ease,
         useNativeDriver: true,
       }).start(() => {
         // L'animation est terminée, permettez à l'utilisateur de retourner la carte.
         setIsRotating(false);
-        setRandomTheme(getRandomTheme());
-
         rotateValue.setValue(0);
       });
     }
   };
 
-  console.log(`modal visible:`, isVisible);
-
   return (
     <View style={styles.randomThemeContainer}>
       <TouchableOpacity onPress={onPress} style={styles.randomThemeButton}>
-        <Text style={styles.randomThemeText}>Aléatoire</Text>
-        <Modal visible={isVisible} animationType="slide" transparent={true}>
-          <Animated.View
-            {...panResponder.panHandlers}
-            style={[
-              styles.modalContainer,
-              {
-                transform: [{ translateY: translateY }],
-              },
-            ]}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Animated.View
-                  style={[
-                    styles.flippingCard,
-                    { transform: [{ rotate: rotate }] },
-                  ]}
-                >
-                  <FlippingCard
-                    imageUrl={require("../assets/questionmark.png")}
-                    isRotating={isRotating}
-                    isVisible={isVisible}
-                  />
-                </Animated.View>
-
-                <View style={styles.icon}>
-                  <Ionicons
-                    name="ios-reload-circle"
-                    size={60}
-                    color="#009700"
-                    onPress={onRandomPress}
-                  />
-                </View>
-              </View>
-            </View>
-          </Animated.View>
-        </Modal>
+        <Image
+          source={require("../assets/box.png")}
+          style={styles.randomBoxHeader}
+        />
       </TouchableOpacity>
+      <Modal visible={isVisible} animationType="slide" transparent={true}>
+        <Animated.View
+          {...panResponder.panHandlers}
+          style={[
+            styles.modalContainer,
+            {
+              transform: [{ translateY: translateY }],
+            },
+          ]}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsVisible(isVisible === false);
+                  if (!isVisible) {
+                    resetTranslateY();
+                  }
+                }}
+                style={{
+                  width: 70,
+                  alignItems: "center",
+                }}
+              >
+                <Entypo
+                  name="cross"
+                  size={30}
+                  color="white"
+                  style={{ padding: 10 }}
+                />
+              </TouchableOpacity>
+
+              {isVisible && (
+                <Animated.View
+                  style={{
+                    transform: [{ rotate: rotate }],
+                    marginTop: -60,
+                    alignItems: "center",
+                  }}
+                >
+                  <TouchableOpacity onPress={onRandomPress}>
+                    <Image
+                      source={require("../assets/random_modal_box.png")}
+                      style={[styles.randomBox]}
+                    />
+                  </TouchableOpacity>
+                </Animated.View>
+              )}
+
+              <FlippingCard
+                imageUrl={require("../assets/questionmark.png")}
+                isRotating={isRotating}
+                isVisible={isVisible}
+                randomTheme={randomTheme}
+                style={{ marginTop: -20 }}
+              />
+
+              {!isRotating && (
+                <>
+                  {/* <View style={styles.iconContainer}>
+                      <TouchableOpacity onPress={onRandomPress}>
+                        <AntDesign name="reload1" size={49} color="white" />
+                      </TouchableOpacity>
+                    </View> */}
+                  <MainButton
+                    buttonTitle="Jouer"
+                    viewStyle={{
+                      marginVertical: 173,
+                    }}
+                    buttonStyle={{ height: 50, width: 150 }}
+                    buttonTextStyle={{ fontSize: 27 }}
+                    onPress={() => {
+                      navigation.navigate("Game", {
+                        categoryName: randomTheme.theme,
+                        // gameplay: randomTheme.gameplay,
+                      });
+                      setIsVisible(!isVisible);
+                      if (!isVisible) {
+                        resetTranslateY();
+                      }
+                    }}
+                  />
+                </>
+              )}
+            </View>
+          </View>
+        </Animated.View>
+      </Modal>
     </View>
   );
 };
@@ -141,40 +196,36 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   randomThemeButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    height: 50,
-    width: 200,
+    borderRadius: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
     marginBottom: 10,
-    backgroundColor: "lightblue",
-    borderRadius: 30,
   },
-  randomThemeText: {
-    color: "white",
-    fontFamily: "WendyOne",
-    fontSize: 25,
+  randomBoxHeader: {
+    height: 60,
+    width: 60,
+  },
+  randomBox: {
+    height: 155,
+    width: 155,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
+    flexDirection: "row",
+    alignItems: "flex-end",
   },
   modalContent: {
-    width: 500,
-    height: 300,
-    borderRadius: 8,
-    backgroundColor: "#05151C",
-    alignItems: "center",
+    flex: 1,
+    backgroundColor: "black",
+    height: 370,
+    borderTopStartRadius: 30,
+    borderTopEndRadius: 30,
   },
-  flippingCard: {
-    marginBottom: 35,
-  },
-  icon: {
-    marginTop: "auto", // Positionne le bouton en bas de l'écran
-    marginVertical: 10,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
+  // iconContainer: {
+  //   alignItems: "flex-end",
+  //   marginRight: 20,
+  //   marginTop: 50,
+  // },
 });
 
 export default RandomThemeButton;

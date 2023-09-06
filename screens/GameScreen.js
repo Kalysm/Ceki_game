@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { StatusBar, Platform, StyleSheet, Text, View } from "react-native";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { DeviceMotion } from "expo-sensors";
 import { useRoute } from "@react-navigation/native";
@@ -8,10 +8,10 @@ import { useTime } from "../components/TimeContext";
 
 const GameScreen = ({ navigation }) => {
   const route = useRoute();
-  const { categoryName, gameplay } = route.params;
+  const { categoryName } = route.params;
   const { selectedDuration } = useTime();
 
-  const [text, setText] = useState("Placez votre téléphone sur votre front");
+  const [text, setText] = useState("Placez votre téléphone \nsur votre front");
   const [randomData, setRandomData] = useState(null);
   const [timer, setTimer] = useState(1);
   const [gameTimer, setGameTimer] = useState(selectedDuration);
@@ -53,7 +53,7 @@ const GameScreen = ({ navigation }) => {
   const fetchRandomData = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.1.17:3000/getRandomData`,
+        `http://13.39.159.201:3000/getRandomData`,
         {
           params: {
             category: categoryName,
@@ -83,24 +83,42 @@ const GameScreen = ({ navigation }) => {
   }, []);
 
   const handleDeviceMotion = (data) => {
-    const { acceleration } = data;
-    if (acceleration && acceleration.hasOwnProperty("x")) {
-      let { x } = acceleration;
+    const { rotationRate } = data;
+    if (rotationRate) {
+      let { beta } = rotationRate;
 
       const now = Date.now();
       const timeSinceLastDetection = now - lastDetectionTimeRef.current;
-
-      if (x > 6.8 && timeSinceLastDetection > 1000) {
-        lastDetectionTimeRef.current = now;
-        setIsMovingUp(true);
-        setIsMovingDown(false);
-      } else if (x < -6.8 && timeSinceLastDetection > 1000) {
-        lastDetectionTimeRef.current = now;
-        setIsMovingUp(false);
-        setIsMovingDown(true);
-      } else {
-        setIsMovingUp(false);
-        setIsMovingDown(false);
+      if (Platform.OS === "android") {
+        if (beta > 350 && timeSinceLastDetection > 1000) {
+          lastDetectionTimeRef.current = now;
+          setIsMovingUp(true);
+          setIsMovingDown(false);
+          console.log(beta);
+        } else if (beta < -350 && timeSinceLastDetection > 1000) {
+          lastDetectionTimeRef.current = now;
+          setIsMovingUp(false);
+          setIsMovingDown(true);
+          console.log(beta);
+        } else {
+          setIsMovingUp(false);
+          setIsMovingDown(false);
+        }
+      } else if (Platform.OS === "ios") {
+        if (beta > 4 && timeSinceLastDetection > 1000) {
+          lastDetectionTimeRef.current = now;
+          setIsMovingUp(true);
+          setIsMovingDown(false);
+          console.log(beta);
+        } else if (beta < -4 && timeSinceLastDetection > 1000) {
+          lastDetectionTimeRef.current = now;
+          setIsMovingUp(false);
+          setIsMovingDown(true);
+          console.log(beta);
+        } else {
+          setIsMovingUp(false);
+          setIsMovingDown(false);
+        }
       }
     } else {
       restartGame();
@@ -133,7 +151,7 @@ const GameScreen = ({ navigation }) => {
       }, 3000);
       setTimer(0);
       return () => clearTimeout(secondTimeout);
-    }, 5000);
+    }, 3000);
 
     const interval = setInterval(() => {
       if (timer < 6) {
@@ -161,22 +179,16 @@ const GameScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (isGameStarted) {
-      if (isMovingUp) {
+      if (isMovingDown) {
         // L'utilisateur a bougé son téléphone vers le haut (action de validation)
-        if (Platform.OS === "ios") {
-          handleMoveUp();
-        } else {
-          handleMoveDown();
-        }
+
+        handleMoveDown();
       }
 
-      if (isMovingDown) {
+      if (isMovingUp) {
         // L'utilisateur a bougé son téléphone vers le bas (action de passer)
-        if (Platform.OS === "ios") {
-          handleMoveDown();
-        } else {
-          handleMoveUp();
-        }
+
+        handleMoveUp();
       }
     }
   }, [isGameStarted, isMovingUp, isMovingDown]);
@@ -203,7 +215,6 @@ const GameScreen = ({ navigation }) => {
 
     setTimeout(() => {
       setShowScore(false);
-
       setLose(false);
     }, 1000);
   };
@@ -214,7 +225,7 @@ const GameScreen = ({ navigation }) => {
         wonWords: wonWords,
         lostWords: lostWords,
         categoryName: categoryName,
-        gameplay: gameplay,
+        // gameplay: gameplay,
       });
     }
   }, [isGameStarted, gameTimer]);
@@ -222,9 +233,9 @@ const GameScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.gamecontainer}>
-        {isGameStarted && gameplay && (
+        {/* {isGameStarted && gameplay && (
           <Text style={styles.gameplayText}>{gameplay}:</Text>
-        )}
+        )} */}
         {randomData && isGameStarted && (
           <Text style={styles.text}>{randomData}</Text>
         )}
@@ -273,7 +284,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   text: {
-    fontSize: 35,
+    fontSize: 45,
     color: "white",
     fontFamily: "WendyOne",
     textAlign: "center",
@@ -284,7 +295,7 @@ const styles = StyleSheet.create({
     bottom: 20,
   },
   timerText: {
-    fontSize: 20,
+    fontSize: 25,
     color: "white",
     fontFamily: "WendyOne",
   },
@@ -292,13 +303,13 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "green", // A semi-transparent background overlay
+    backgroundColor: "#4EEB83", // A semi-transparent background overlay
   },
   loseOverlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "grey", // A semi-transparent background overlay
+    backgroundColor: "#EB4E4E", // A semi-transparent background overlay
   },
   winText: {
     fontSize: 40,

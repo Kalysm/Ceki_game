@@ -1,16 +1,16 @@
 import StackNav from "./routes/StackNav";
-import { Text } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { TimeProvider } from "./components/TimeContext";
 import theme from "./theme/theme";
+import LoadingScreen from "./screens/LoadingScreen";
 
-// Personnalisez le thème par défaut de NavigationContainer avec votre thème personnalisé
+// Personnalisez le thème par défaut de NavigationContainer avec le thème personnalisé
 const customTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: theme.darkBackground, // Utilisation de la couleur de fond sombre
+    background: theme.darkBackground,
   },
 };
 
@@ -20,7 +20,7 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    return <Text>Chargement...</Text>;
+    return <LoadingScreen />;
   }
   return (
     <TimeProvider>

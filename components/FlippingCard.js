@@ -10,16 +10,17 @@ import {
 import MainButton from "./MainButton";
 import { useNavigation } from "@react-navigation/native";
 import { Image } from "expo-image";
-import { allCategories } from "../data/categories";
 
 const FlippingCard = ({
   imageUrl,
   title,
   theme,
   gameplay,
+  punchline,
   style,
   isRotating,
   isVisible,
+  randomTheme,
 }) => {
   const navigation = useNavigation();
 
@@ -27,43 +28,44 @@ const FlippingCard = ({
 
   const animatedValue = useRef(new Animated.Value(0)).current;
 
-  const rotationY = animatedValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "180deg"],
-  });
-
   const handleCardPress = () => {
     if (isRotating === false || isRotating === undefined) {
-      const toValue = isFlipped ? 0 : 1;
+      if (!isVisible) {
+        const toValue = isFlipped ? 0 : 1;
 
-      Animated.timing(animatedValue, {
-        toValue,
-        duration: 250,
-        easing: Easing.circle,
-        useNativeDriver: true,
-      }).start(() => {
-        setIsFlipped(!isFlipped);
-      });
+        Animated.timing(animatedValue, {
+          toValue,
+          duration: 70,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }).start(() => {
+          setIsFlipped(!isFlipped);
+        });
+      }
     }
   };
 
-  const getRandomCategory = () => {
-    const randomIndex = Math.floor(Math.random() * allCategories.length);
-    return allCategories[randomIndex];
-  };
-
-  const randomCategory = getRandomCategory();
-
-  console.log(isFlipped);
-
   return (
     <View style={[styles.container, style]}>
-      <TouchableOpacity onPress={handleCardPress}>
-        <Animated.View
-          style={[styles.category, { transform: [{ rotateY: rotationY }] }]}
-        >
-          {isFlipped ? (
-            <View style={[styles.card, styles.cardBack]}>
+      <TouchableOpacity
+        activeOpacity={isVisible ? 1 : 0.2}
+        onPress={() => {
+          // Vérifiez si isVisible est faux avant de gérer le clic
+          if (!isVisible) {
+            handleCardPress();
+          }
+        }}
+      >
+        <Animated.View style={styles.category}>
+          {isFlipped && !isVisible ? (
+            <View style={styles.cardBack}>
+              <Image source={imageUrl} style={styles.imageBack} />
+              <View style={styles.textBackContainer}>
+                <Text style={[styles.title, { fontSize: 19, marginTop: 8 }]}>
+                  {punchline}
+                </Text>
+              </View>
+
               <MainButton
                 onPress={() => {
                   navigation.navigate("Game", {
@@ -72,30 +74,43 @@ const FlippingCard = ({
                   });
                 }}
                 buttonTitle="Jouer"
+                viewStyle={{ marginBottom: 5 }}
+                buttonStyle={{ height: 34, width: 100 }}
               />
             </View>
           ) : (
-            <View style={styles.imageBackground}>
-              <Image source={imageUrl} style={styles.image} />
-              <Text style={styles.title}>{title}</Text>
+            !isFlipped &&
+            !isVisible && (
+              <View style={styles.card}>
+                <Image source={imageUrl} style={styles.image} />
+                <View style={styles.titleBg}>
+                  <Text style={[styles.title, { marginTop: 5 }]}>{title}</Text>
+                </View>
+              </View>
+            )
+          )}
+
+          {isVisible && !isRotating && (
+            <View style={styles.card}>
+              <Image source={randomTheme.imageUrl} style={styles.image} />
+              <View style={styles.titleBg}>
+                <Text style={styles.title}>{randomTheme.title}</Text>
+              </View>
             </View>
           )}
 
-          {isFlipped && isVisible && (
-            <View style={styles.imageBackground}>
-              <Image source={randomCategory.imageUrl} style={styles.image} />
-              <Text
-                style={[styles.title, { transform: [{ rotateY: "180deg" }] }]}
-              >
-                {randomCategory.title}
-              </Text>
+          {isVisible && isRotating && (
+            <View style={styles.card}>
+              <Image source={randomTheme.imageUrl} style={styles.image} />
+              <View style={styles.titleBg}>
+                <Text style={styles.title}>{randomTheme.title}</Text>
+              </View>
             </View>
           )}
 
           {isRotating && (
             <View style={styles.imageBackground}>
-              <Image source={imageUrl} style={styles.image} />
-              <Text style={styles.title}>{title}</Text>
+              <Image source={imageUrl} style={styles.randomImage} />
             </View>
           )}
         </Animated.View>
@@ -111,42 +126,59 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   category: {
-    backgroundColor: "black",
-    width: 120,
-    height: 160,
+    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    width: 116,
+    height: 163,
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#3A3A3A",
+    borderStyle: "solid",
+    borderRadius: 4,
   },
   card: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  cardBack: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  imageBack: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.2,
+  },
+  textBackContainer: {
+    flex: 1,
+    alignContent: "center",
+    justifyContent: "center",
+  },
+  image: {
     width: "100%",
     height: "100%",
     position: "absolute",
-    justifyContent: "flex-end",
-    alignItems: "center",
   },
-  cardBack: {
-    backgroundColor: "black",
-    transform: [{ rotateY: "180deg" }],
-  },
-  imageBackground: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  image: {
-    width: 120,
-    height: 160,
-    position: "absolute",
-    borderWidth: 2,
-    borderColor: "white",
-    borderStyle: "solid",
-    borderRadius: 3,
+  titleBg: {
+    height: 45,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "center",
   },
   title: {
     fontSize: 15,
     fontFamily: "WendyOne",
     color: "white",
-    marginBottom: 15,
     textAlign: "center",
+    paddingHorizontal: 4,
+  },
+
+  randomImage: {
+    width: 116,
+    height: 163,
+    alignSelf: "center",
   },
 });
 
