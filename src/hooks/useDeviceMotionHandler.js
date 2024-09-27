@@ -35,11 +35,11 @@ const useDeviceMotionHandler = (
       }
       // Détection des mouvements pour iOS
       else if (Platform.OS === "ios") {
-        if (beta > 4 && timeSinceLastDetection > 2000) {
+        if (beta > 70 && timeSinceLastDetection > 2000) {
           lastDetectionTimeRef.current = now;
           setIsMovingUp(true);
           setIsMovingDown(false);
-        } else if (beta < -4 && timeSinceLastDetection > 2000) {
+        } else if (beta < -70 && timeSinceLastDetection > 2000) {
           lastDetectionTimeRef.current = now;
           setIsMovingUp(false);
           setIsMovingDown(true);
